@@ -6,10 +6,12 @@ import numpy as np
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
 
 
-DATA_FILE = "data/gender-classifier-DFE-791531.csv"
+DATA_DIR = "data"
+DATA_FILE = "{}/gender-classifier-DFE-791531.csv".format(DATA_DIR)
 
 
 def load_data():
@@ -24,21 +26,19 @@ def select_rows(df):
 def split_data(rows):
     n_samples = len(rows)
     random.shuffle(rows)
-    test_size = round(n_samples * 0.2)
+    test_size = round(n_samples * 0.4)
     test_rows = rows[:test_size]
-    val_rows = rows[test_size:2 * test_size]
-    train_rows = rows[2 * test_size:]
+    train_rows = rows[test_size:]
 
-    return (train_rows, val_rows, test_rows)
+    return (train_rows, test_rows)
 
 
-def encode_labels(train_rows, val_rows, test_rows, df):
+def encode_class_labels(train_rows, test_rows, df):
     encoder = LabelEncoder()
     y_train = encoder.fit_transform(df.ix[train_rows, "gender"])
-    y_val = encoder.transform(df.ix[val_rows, "gender"])
     y_test = encoder.transform(df.ix[test_rows, "gender"])
 
-    return (y_train, y_val, y_test)
+    return (y_train, y_test, encoder.classes_)
 
 
 def normalize_text(text):
@@ -55,3 +55,18 @@ def normalize_text(text):
     text = re.sub('\s+', ' ', text)
 
     return text
+
+
+def load_data_split():
+    train = pd.read_csv("{}/train_rows.txt".format(DATA_DIR)).row_number.tolist()
+    test = pd.read_csv("{}/test_rows.txt".format(DATA_DIR)).row_number.tolist()
+
+    return (train, test)
+
+
+def report_results(model, y, X, class_names, data_set_name):
+    print(data_set_name)
+    print(classification_report(y, model.predict(X), target_names=class_names))
+    print("Accuracy: {}".format(accuracy_score(y, model.predict(X))))
+    print("==================================================================")
+    print()

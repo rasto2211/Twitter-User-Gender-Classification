@@ -32,7 +32,7 @@ print("Features from tweet text and description")
 
 X_train, X_test = extract_feats_from_text_and_desc(df, train_rows, test_rows)
 
-grid_search = GridSearchCV(MultinomialNB(), PARAMS, n_jobs=JOBS, verbose=5, cv=5,
+grid_search = GridSearchCV(MultinomialNB(), PARAMS, n_jobs=JOBS, verbose=5, cv=4,
                            scoring="f1")
 grid_search.fit(X_train, y_train)
 report_results(grid_search, y_train, X_train, y_test, X_test, class_names)

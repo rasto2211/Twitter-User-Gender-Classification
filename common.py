@@ -27,7 +27,7 @@ def select_rows(df):
 def split_data(rows):
     n_samples = len(rows)
     random.shuffle(rows)
-    test_size = round(n_samples * 0.4)
+    test_size = round(n_samples * 0.2)
     test_rows = rows[:test_size]
     train_rows = rows[test_size:]
 
@@ -104,6 +104,9 @@ def extract_feats_from_text(df, train_rows, test_rows):
 
 
 def extract_feats_from_text_and_desc(df, train_rows, test_rows):
+    df["text_norm"] = [normalize_text(text) for text in df["text"]]
+    df["description_norm"] = [normalize_text(text) for text in df["description"].fillna("")]
+
     vectorizer = CountVectorizer()
     train_text = df.ix[train_rows, :]["text_norm"]
     train_desc = df.ix[train_rows, :]["description_norm"]
@@ -113,3 +116,14 @@ def extract_feats_from_text_and_desc(df, train_rows, test_rows):
     X_test = compute_text_desc_feats(vectorizer, test_rows, df)
 
     return (X_train, X_test)
+
+
+def extract_tweet_count_feats(df, train_rows, test_rows):
+    feats = df[["retweet_count", "tweet_count", "fav_number"]]
+
+    train_feats = feats.ix[train_rows, :]
+    test_feats = feats.ix[test_rows, :]
+
+    scaler = StandardScaler().fit(train_feats)
+
+    return (scaler.transform(train_feats), scaler.transform(test_feats))

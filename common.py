@@ -9,6 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 DATA_DIR = "data"
@@ -127,3 +128,18 @@ def extract_tweet_count_feats(df, train_rows, test_rows):
     scaler = StandardScaler().fit(train_feats)
 
     return (scaler.transform(train_feats), scaler.transform(test_feats))
+
+
+def extract_tfidf_from_text_and_desc(df, train_rows, test_rows):
+    tfidf = TfidfVectorizer(strip_accents="unicode")
+    df["text_norm"] = [normalize_text(text) for text in df["text"]]
+    df["description_norm"] = [normalize_text(text) for text in df["description"].fillna("")]
+
+    train_text = df.ix[train_rows, :]["text_norm"]
+    train_desc = df.ix[train_rows, :]["description_norm"]
+    tfidf = tfidf.fit(train_text.str.cat(train_desc, sep=' '))
+
+    X_train = compute_text_desc_feats(tfidf, train_rows, df)
+    X_test = compute_text_desc_feats(tfidf, test_rows, df)
+
+    return (X_train, X_test)

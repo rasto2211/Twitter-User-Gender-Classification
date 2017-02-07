@@ -1,8 +1,14 @@
-Data set from:
+This data set was used to train a CrowdFlower AI gender predictor. You can read
+all about the project [here](https://www.crowdflower.com/using-machine-learning-to-predict-gender/). 
+Contributors were asked to simply view a Twitter
+profile and judge whether the user was a male, a female, or a brand
+(non-individual). The dataset contains 20,000 rows, each with a user name, a
+random tweet, account profile and image, location, and even link and sidebar
+color.
 
-[link](https://www.kaggle.com/crowdflower/twitter-user-gender-classification)
+The data can be downloaded from [kaggle](https://www.kaggle.com/crowdflower/twitter-user-gender-classification).
 
-#The Data
+#The Data Description
 
 The dataset contains the following fields:
 
